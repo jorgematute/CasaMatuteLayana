@@ -11,7 +11,7 @@ export class JsonDBError extends Error {
 }
 
 const locks = new Map<string, Promise<void>>();
-const dataRoot = path.resolve(process.env.DATA_DIR ?? './data');
+const dataRoot = path.resolve(/* turbopackIgnore: true */ process.env.DATA_DIR ?? './data');
 
 function resolveCollectionPath(name: string): string {
   if (!/^[a-z0-9-]+$/.test(name)) throw new JsonDBError('VALIDATION_ERROR', 'Nombre de colección inválido');

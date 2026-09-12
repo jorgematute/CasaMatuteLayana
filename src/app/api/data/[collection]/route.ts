@@ -17,7 +17,9 @@ export async function GET(request: Request, context: RouteContext) {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
     if (id) return success(await getById(collection, id));
-    return success(await getAll(collection, { limit: Number(url.searchParams.get('limit') ?? 50), offset: Number(url.searchParams.get('offset') ?? 0), sortBy: url.searchParams.get('sortBy') ?? undefined, sortOrder: url.searchParams.get('sortOrder') === 'desc' ? 'desc' : 'asc' }));
+    const sortBy = url.searchParams.get('sortBy');
+    const options = { limit: Number(url.searchParams.get('limit') ?? 50), offset: Number(url.searchParams.get('offset') ?? 0), sortOrder: url.searchParams.get('sortOrder') === 'desc' ? 'desc' as const : 'asc' as const, ...(sortBy ? { sortBy } : {}) };
+    return success(await getAll(collection, options));
   } catch (error) { return failure(error); }
 }
 
