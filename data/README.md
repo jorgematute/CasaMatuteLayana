@@ -1,5 +1,5 @@
-# Capa de datos JSON
+# Esquemas y datos iniciales
 
-Cada archivo representa una colección y contiene `_meta` y `records`. Los esquemas Zod viven en `_schema/`; las copias de seguridad se escriben en `_backups/` y no se versionan.
+Los esquemas Zod viven en `_schema/`. La persistencia de ejecución está en Supabase: las colecciones se guardan en `public.app_records` y las cuentas en Supabase Auth con perfil en `public.users`.
 
-En producción Vercel mantiene el sistema en modo solo lectura porque el filesystem serverless es efímero. Para escritura persistente, configure un adapter KV antes de publicar.
+Los JSON de esta carpeta son datos de referencia locales y no son leídos ni escritos por la aplicación. La migración inicial de Supabase se encuentra en `supabase/migrations/`.

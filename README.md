@@ -1,6 +1,6 @@
 # Casa Matute Layana
 
-Sistema fullstack TypeScript para organizar notas y datos operativos. La primera versión usa Next.js App Router, JSON-DB local, validación Zod y una interfaz responsive orientada a lectura rápida.
+Sistema fullstack TypeScript para organizar el presupuesto del hogar. Usa Next.js App Router, Supabase Auth, PostgreSQL/Supabase para persistencia, validación Zod y una interfaz responsive.
 
 ## Inicio
 
@@ -26,8 +26,9 @@ npm run build
 ## Arquitectura
 
 - `src/app`: páginas y Route Handlers.
-- `src/lib/json-db.ts`: CRUD tipado, backups y modo solo lectura en producción.
-- `data/`: colecciones JSON y esquemas Zod.
+- `src/lib/supabase/`: clientes SSR y persistencia Supabase.
+- `supabase/migrations/`: esquema SQL, perfiles, registros JSONB y políticas RLS.
+- `data/_schema/`: esquemas Zod para validar colecciones.
 - `src/modules`: lógica de dominio, actualmente notas.
 - `src/hooks/use-collection.ts`: consumo reutilizable de colecciones.
 - `.github/workflows/ci.yml`: type-check, lint, tests y build.
