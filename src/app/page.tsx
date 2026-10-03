@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
   const { data: profile } = user
     ? await supabase.from('users').select('is_admin').eq('id', user.id).maybeSingle()
     : { data: null };
