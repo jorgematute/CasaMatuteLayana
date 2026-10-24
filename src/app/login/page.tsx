@@ -1,11 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -37,7 +35,7 @@ export default function LoginPage() {
         setAuthError(result.error ?? 'Correo o contraseña incorrectos');
         return;
       }
-      router.push('/');
+      window.location.replace('/');
     } catch {
       setAuthError('No se pudo conectar. Intenta de nuevo.');
     } finally {

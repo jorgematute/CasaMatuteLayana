@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import UsersManager from './users-manager';
+import AccountActions from '@/app/account/account-actions';
 
 export default function AdminUsersPage() {
   return (
@@ -11,6 +12,7 @@ export default function AdminUsersPage() {
           <Link href="/notes">Notas</Link>
           <span className="users-admin-nav-current">Cuentas</span>
         </div>
+        <AccountActions />
       </nav>
       <UsersManager />
       <footer className="footer"><span>Casa Matute Layana</span><span className="mono">ADMIN / ACCESOS</span></footer>

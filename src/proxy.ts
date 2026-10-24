@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const pathname = request.nextUrl.pathname;
-  const isPrivateRoute = pathname === '/' || pathname.startsWith('/notes') || pathname.startsWith('/status') || pathname.startsWith('/admin');
+  const isPrivateRoute = pathname === '/' || pathname.startsWith('/notes') || pathname.startsWith('/status') || pathname.startsWith('/admin') || pathname.startsWith('/account');
 
   if (isPrivateRoute && !claims) {
     return NextResponse.redirect(new URL('/login', request.url));

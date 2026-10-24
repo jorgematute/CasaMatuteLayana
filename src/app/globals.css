@@ -125,6 +125,21 @@ h1 { font-size: clamp(4rem, 11vw, 9rem); line-height: .88; letter-spacing: -.09e
 .users-admin-form-actions { display: flex; flex-wrap: wrap; gap: 9px; justify-content: flex-end; }
 .users-admin-save:disabled { opacity: .65; cursor: wait; }
 .users-admin-security { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .7rem; line-height: 1.5; }
+.account-actions { position: relative; display: flex; align-items: center; gap: 13px; color: var(--muted); font-size: .82rem; }
+.account-actions a { color: inherit; }
+.account-actions a:hover { color: var(--ink); }
+.account-actions button { padding: 0; border: 0; background: transparent; color: var(--ink); font-size: inherit; font-weight: 600; cursor: pointer; }
+.account-actions button:disabled { opacity: .6; cursor: wait; }
+.account-actions-error { position: absolute; top: calc(100% + 8px); right: 0; width: max-content; max-width: min(280px, 80vw); color: #b53b2d; font-size: .72rem; }
+.account-content { max-width: 780px; margin: 0 auto; padding: 72px 28px 90px; }
+.account-content > h1 { margin: 16px 0 12px; font-size: clamp(3.5rem, 9vw, 6rem); }
+.account-email { margin: 0 0 34px; color: var(--muted); }
+.account-password-panel { padding: 26px; border: 1px solid var(--line); border-radius: 8px; background: rgba(251,250,245,.78); }
+.account-password-panel h2 { margin: 0 0 7px; font-size: 1.5rem; letter-spacing: -.05em; }
+.account-password-panel > p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+.password-form { margin-top: 24px; }
+.password-hint { margin: 7px 0 0; color: var(--muted); font-size: .75rem; }
+.password-success { margin: -8px 0 16px; color: #3e6124; font-size: .82rem; }
 @media (max-width: 850px) {
 	.users-admin-layout { grid-template-columns: minmax(0, 1fr); }
 	.users-admin-form-panel { order: -1; }
@@ -142,4 +157,10 @@ h1 { font-size: clamp(4rem, 11vw, 9rem); line-height: .88; letter-spacing: -.09e
 	.users-admin-row { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 9px; }
 	.users-admin-avatar { width: 34px; }
 	.users-admin-footer { padding-left: 20px; padding-right: 20px; }
+	.account-content { padding: 48px 20px 62px; }
+	.account-password-panel { padding: 20px 16px; }
+}
+@media (max-width: 480px) {
+	.nav { flex-wrap: wrap; gap: 14px; }
+	.account-actions { width: 100%; justify-content: flex-end; }
 }
