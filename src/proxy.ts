@@ -11,7 +11,8 @@ export async function proxy(request: NextRequest) {
       setAll(cookiesToSet) {
         for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
         response = NextResponse.next({ request });
-        for (const { name, value, options } of cookiesToSet) response.cookies.set(name, value, options);
+        for (const { name, value, options } of cookiesToSet)
+          response.cookies.set(name, value, options);
       },
     },
   });
@@ -19,9 +20,23 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const pathname = request.nextUrl.pathname;
-  const isPrivateRoute = pathname === '/' || pathname.startsWith('/notes') || pathname.startsWith('/status') || pathname.startsWith('/admin') || pathname.startsWith('/account');
+  const isHomeApi = pathname === '/api/hogar' || pathname.startsWith('/api/hogar/');
+  const isHomePage = pathname === '/hogar' || pathname.startsWith('/hogar/');
+  const isPrivateRoute =
+    pathname === '/' ||
+    pathname.startsWith('/notes') ||
+    pathname.startsWith('/status') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/account');
 
-  if (isPrivateRoute && !claims) {
+  if (isHomeApi && !claims) {
+    return NextResponse.json(
+      { ok: false, error: { codigo: 'NO_AUTORIZADO', mensaje: 'Debe iniciar sesión.' } },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
+  if ((isPrivateRoute || isHomePage) && !claims) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -29,5 +44,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/hogar/:path*',
+    '/api/hogar/:path*',
+  ],
 };

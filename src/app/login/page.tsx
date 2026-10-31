@@ -35,7 +35,7 @@ export default function LoginPage() {
         setAuthError(result.error ?? 'Correo o contraseña incorrectos');
         return;
       }
-      window.location.replace('/');
+      window.location.replace('/hogar');
     } catch {
       setAuthError('No se pudo conectar. Intenta de nuevo.');
     } finally {

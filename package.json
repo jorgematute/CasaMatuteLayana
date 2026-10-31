@@ -10,8 +10,11 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
+    "test:ver": "vitest",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:migrar": "node --env-file=.env.local scripts/migrar.mjs",
+    "db:verificar": "node --env-file=.env.local scripts/verificar-bd.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -20,6 +23,7 @@
     "framer-motion": "latest",
     "next": "latest",
     "next-themes": "latest",
+    "pg": "^8.23.1",
     "react": "latest",
     "react-dom": "latest",
     "zod": "latest"
@@ -28,6 +32,7 @@
     "@testing-library/jest-dom": "latest",
     "@testing-library/react": "latest",
     "@types/node": "latest",
+    "@types/pg": "^8.23.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
