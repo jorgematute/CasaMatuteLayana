@@ -6,10 +6,16 @@ types.setTypeParser(20, (valor) => Number.parseInt(valor, 10));
 
 const globalParaPool = globalThis as typeof globalThis & { poolCasaMatute?: Pool };
 
+const cadenaConexion =
+  process.env.CASAMATUTELAYANA_POSTGRES_URL_NON_POOLING ??
+  process.env.CASAMATUTELAYANA_POSTGRES_URL;
+const urlConexion = cadenaConexion ? new URL(cadenaConexion) : null;
+urlConexion?.searchParams.delete('sslmode');
+
 export const pool =
   globalParaPool.poolCasaMatute ??
   new Pool({
-    connectionString: process.env.CASAMATUTELAYANA_POSTGRES_URL,
+    connectionString: urlConexion?.toString(),
     ssl: { rejectUnauthorized: true },
     max: 3,
     idleTimeoutMillis: 10_000,

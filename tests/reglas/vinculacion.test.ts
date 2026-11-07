@@ -1,28 +1,43 @@
 import { describe, expect, it } from 'vitest';
-import { estadoTrasAbono, resolverMontoVinculado, validarVinculacion } from '@/lib/reglas/vinculacion';
+import {
+  estadoTrasAbono,
+  resolverMontoVinculado,
+  validarVinculacion,
+} from '@/lib/reglas/vinculacion';
 import { esperarCodigo } from './ayudas';
 
 describe('vinculacion de movimientos y pagos', () => {
   it('T-17 usa el restante si el pago no es abonable', () => {
-    expect(resolverMontoVinculado({
-      abonable: false,
-      montoEnviado: 999,
-      restante: 300_000,
-    })).toBe(300_000);
+    expect(
+      resolverMontoVinculado({
+        abonable: false,
+        montoEnviado: 999,
+        restante: 300_000,
+      }),
+    ).toBe(300_000);
   });
 
   it('T-18 conserva el monto enviado si el pago es abonable', () => {
-    expect(resolverMontoVinculado({
-      abonable: true,
-      montoEnviado: 150_000,
-      restante: 300_000,
-    })).toBe(150_000);
+    expect(
+      resolverMontoVinculado({
+        abonable: true,
+        montoEnviado: 150_000,
+        restante: 300_000,
+      }),
+    ).toBe(150_000);
   });
 
   it('T-19 rechaza un abono abonable de cero', () => {
     esperarCodigo(
       () => validarVinculacion({ abonable: true, montoEnviado: 0, restante: 300_000 }),
       'DATOS_INVALIDOS',
+    );
+  });
+
+  it('rechaza un abono mayor al restante del pago', () => {
+    esperarCodigo(
+      () => validarVinculacion({ abonable: true, montoEnviado: 300_001, restante: 300_000 }),
+      'MONTO_EXCEDE_RESTANTE',
     );
   });
 
@@ -39,10 +54,12 @@ describe('vinculacion de movimientos y pagos', () => {
   });
 
   it('no valida el monto enviado cuando el pago no es abonable', () => {
-    expect(() => validarVinculacion({
-      abonable: false,
-      montoEnviado: 0,
-      restante: 300_000,
-    })).not.toThrow();
+    expect(() =>
+      validarVinculacion({
+        abonable: false,
+        montoEnviado: 0,
+        restante: 300_000,
+      }),
+    ).not.toThrow();
   });
 });

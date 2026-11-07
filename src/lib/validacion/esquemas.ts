@@ -3,6 +3,8 @@ import { z } from 'zod';
 const esquemaFecha = z.iso.date();
 const esquemaNombre = (maximo: number) => z.string().min(2).max(maximo);
 
+export const esquemaId = z.uuid();
+
 export const esquemaMovimiento = z
   .object({
     miembroId: z.uuid(),
@@ -61,6 +63,19 @@ export const esquemaFiltrosMovimientos = z.object({
   categoriaId: z.uuid().optional(),
   desde: esquemaFecha.optional(),
   hasta: esquemaFecha.optional(),
+});
+
+export const esquemaFiltrosPagos = z.object({
+  estado: z.enum(['pendiente', 'pagado']).optional(),
+});
+
+const esquemaBooleanoConsulta = z
+  .enum(['true', 'false'])
+  .optional()
+  .transform((valor) => valor === 'true');
+
+export const esquemaFiltrosCatalogos = z.object({
+  incluirInactivos: esquemaBooleanoConsulta,
 });
 
 export const esquemaFiltrosResumen = z.object({

@@ -6,10 +6,10 @@
 | P01 Base de datos | completado | correcto | correcto (2/2) | 2026-10-31 |
 | P02 Reglas de negocio | completado | correcto | correcto (38/38) | 2026-10-31 |
 | P03 Servidor | completado | correcto | correcto (47/47) | 2026-10-31 |
-| P04 Datos | pendiente | | | |
-| P05 API | pendiente | | | |
-| P06 Interfaz base y catálogos | pendiente | | | |
-| P07 Pagos y panel de alertas | pendiente | | | |
+| P04 Datos | completado | correcto | correcto (48/48) | 2026-11-07 |
+| P05 API | completado | correcto | correcto (48/48) | 2026-11-07 |
+| P06 Interfaz base y catálogos | completado | correcto | correcto (48/48) | 2026-11-07 |
+| P07 Pagos y panel de alertas | completado | correcto | correcto (48/48) | 2026-11-07 |
 | P08 Movimientos y aceptación | pendiente | | | |
 | P09 Opcionales: saldo y categorías | pendiente | | | |
 | P10 Opcionales: resumen y hormiga | pendiente | | | |
@@ -71,3 +71,58 @@
 - Versiones fijadas en el lockfile: Next.js 16.4.3, Zod 4.6.7, sharp 0.35.5, source-map-js 1.2.2, undici 8.12.3, Vite 8.3.5 y brace-expansion 1.1.21 / 5.0.12.
 - Validación tras actualizar dependencias: `npm.cmd run build` correcto con Next.js 16.4.3; `npm.cmd test` correcto (7 archivos, 47 pruebas).
 - Push pendiente: el árbol de trabajo contiene cambios y archivos sin commit; las instrucciones del proyecto indican que el estudiante revisa y hace el commit. El HEAD local `main` coincide con `origin/main`.
+
+### P04 Datos
+
+- Archivos creados: `src/lib/datos/tipos.ts`, `eventos.ts`, `errores.ts`, `catalogos.ts`, `pagos.ts`, `saldo.ts`, `movimientos.ts`, `resumen.ts`, `panel.ts`, `conexion.ts` y `src/lib/dataService.ts`.
+- Archivos modificados: `src/lib/reglas/vinculacion.ts`, `tests/reglas/vinculacion.test.ts`, `package.json`, `package-lock.json` y este registro.
+- Scripts creados: `scripts/limpiar-prueba.mjs`, `scripts/probar-flujo.ts` y `scripts/cargar-demo.ts`; se agregaron `db:limpiar`, `probar:flujo` y `db:demo`.
+- Dependencias: `tsx` instalado como dependencia de desarrollo.
+- Acceso a datos: catálogos, saldo mensual, pagos, alertas, movimientos y panel usan SQL parametrizado. El registro de movimientos ejecuta las verificaciones, bloqueo del pago, comprobación del saldo, inserción, actualización del estado y evento dentro de una transacción. Los abonos que reducen un compromiso del mes no se descuentan dos veces al validar el saldo.
+- Regla relacionada corregida: los abonos parciales abonables que exceden el restante ahora fallan con `MONTO_EXCEDE_RESTANTE`.
+- Verificación local: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` sin errores. La única importación de `lib/db/conexion.ts` está dentro de `src/lib/datos/`.
+- Salida de `npm.cmd run probar:flujo`: el script terminó con `Resultado de probar:flujo: 2 fallas.` antes del paso 1. La limpieza previa y la limpieza final no conectaron: el pooler agotó el tiempo y la alternativa falló con `SELF_SIGNED_CERT_IN_CHAIN`. No se ejecutó ninguna operación de la prueba.
+- Salida de `npm.cmd run db:demo`: falló en la limpieza previa con el mismo error TLS, antes de crear datos demo.
+- Diagnóstico de conexión: las URLs configuradas no permiten una conexión verificable desde este entorno; el pooler principal agota el tiempo, el certificado alterno no está en la cadena de confianza y un intento de conexión sin validar el certificado recibió `XX000` (tenant/usuario no reconocido). No se desactivó la validación TLS ni se imprimieron credenciales.
+- Reintento tras informar el usuario que Supabase estaba pausado: `npm.cmd run probar:flujo` volvió a fallar en la limpieza previa y final; `npm.cmd run db:demo` volvió a fallar en la limpieza previa. En ambos continúa el timeout del pooler y la conexión alternativa devuelve `SELF_SIGNED_CERT_IN_CHAIN`; no se ejecutaron escrituras del flujo ni de demo. El proyecto pausado pudo ser un factor, pero no es el único bloqueo observable con la configuración actual.
+- Reintento cuando el usuario confirmó estado `Healthy` (2026-11-07): `npm.cmd run probar:flujo` y `npm.cmd run db:demo` aún fallan antes de cualquier escritura; el pooler agota el tiempo y el fallback presenta `SELF_SIGNED_CERT_IN_CHAIN`. Ahora DNS y TCP responden en ambas URLs, pero `NODE_EXTRA_CA_CERTS` no está configurado en el proceso. Se mantiene la comprobación TLS estricta.
+- Corrección tras el usuario configurar la CA: `scripts/limpiar-prueba.mjs` consiguió conectarse con la URL alternativa, pero el pool de aplicación seguía usando únicamente la URL principal y falló con `ECONNRESET`. `src/lib/db/conexion.ts` ahora prefiere `CASAMATUTELAYANA_POSTGRES_URL_NON_POOLING` y usa la principal como alternativa; ambas conservan la verificación TLS y se elimina `sslmode` para que no reemplace la configuración explícita del certificado.
+- Limpieza: se quitó el `Promise.all` de consultas concurrentes sobre un único cliente `pg`; las lecturas ahora se ejecutan en secuencia, eliminando la advertencia de consultas simultáneas de `pg`.
+- Salida final de `npm.cmd run probar:flujo` (con `NODE_EXTRA_CA_CERTS` apuntando a `certificados-locales/supabase-ca.crt`): pasos 1 a 14 en `OK`, `Resultado de probar:flujo: 0 fallas`. La limpieza final eliminó 6 movimientos, 6 eventos, 2 pagos, 1 categoría y 1 miembro.
+- Salida final de `npm.cmd run db:demo`: correcto. Se crearon 2 miembros, 3 categorías, 1 ingreso, 3 gastos y 3 pagos. La regla `FECHA_NO_FUTURA` impidió crear el pago vencido; se anotó y se agregó un tercer pago con vencimiento a 1 día. La tabla mostró dos pagos rojos y uno amarillo.
+- Validación final posterior a la corrección: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; Prettier y `git diff --check` correctos.
+- Estado: P04 implementado y validado contra la base real; P05 sigue pendiente, por lo que la fase 4 permanece abierta.
+
+### P05 API
+
+- Archivos creados: rutas para panel, movimientos, pagos, miembros y categorías; rutas dinámicas para eliminar pagos y actualizar miembros y categorías; `doc/checkpoints/FASE_4_COMPLETADA.md`.
+- Archivos modificados: `src/lib/validacion/esquemas.ts` y este registro.
+- Contratos: todas las rutas requieren sesión como primera instrucción y son dinámicas; filtros y cuerpos se validan con Zod; parámetros `[id]` se esperan como `Promise` y se validan como UUID. Las altas de pagos y movimientos responden 201; el movimiento registra el identificador de sesión. Se excluyeron los endpoints opcionales `/api/hogar/saldo` y `/api/hogar/resumen`.
+- Sin sesión: GET `/api/hogar/panel`, GET `/api/hogar/pagos` y POST `/api/hogar/movimientos` devolvieron 401 `NO_AUTORIZADO` y `Cache-Control: no-store`.
+- Filtros: estados de pago, valores de `incluirInactivos` y fechas inválidos devolvieron 400 `DATOS_INVALIDOS`.
+- Con sesión: GET `/api/hogar/panel` devolvió las tres alertas DEMO (dos rojas y una amarilla) y saldo: ingresos $3.000.000, gastos $647.000, pagos pendientes del mes $575.000, disponible $1.778.000. GET `/api/hogar/pagos` devolvió los tres pagos DEMO pendientes.
+- Saldo insuficiente: POST de un gasto DEMO de $1.778.001 con saldo de $1.778.000 respondió 409 `SALDO_INSUFICIENTE`; el detalle reportó saldo disponible de $1.778.000.
+- Verificación local: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; Prettier correcto.
+- Incidencia de entorno: la primera prueba con sesión falló porque el servidor iniciado sin `NODE_EXTRA_CA_CERTS` no confiaba en la CA de Supabase (`SELF_SIGNED_CERT_IN_CHAIN`). Se reinició el servidor usando el certificado local configurado; no se desactivó la verificación TLS y las pruebas autenticadas finalizaron correctamente.
+- Estado: P05 implementado y validado; fase 4 completada.
+
+### P06 Interfaz base y catálogos
+
+- Archivos creados: componentes reutilizables en `src/components/ui/`, navegación e insignias del hogar en `src/components/hogar/`, `src/app/hogar/layout.tsx`, `src/app/hogar/page.tsx` y `src/app/hogar/catalogos/page.tsx`.
+- Archivos modificados: `src/app/globals.css`, `src/app/page.tsx`, `src/app/account/account-actions.tsx` y este registro.
+- Estilos: el proyecto no tiene Tailwind instalado ni configurado; se añadieron los tokens de la sección 13 como variables CSS sin retirar los tokens ni estilos existentes.
+- Funcionalidad: layout de hogar protegido por `obtenerSesion()`; panel con saldo y alertas; navegación con rutas requeridas y menú adaptable; formularios y tablas para miembros/categorías con límite mensual, estado, movimientos y acciones PATCH; errores de API expuestos al usuario y actualización con `router.refresh()`.
+- Verificación autenticada: la sesión existente permitió consultar el panel. Se crearon `Prueba P06 miembro 1794065728229` y `Prueba P06 categoría 1794065728229` (límite $123.456); ambos quedaron activos. Los intentos de repetir ambos nombres respondieron 409 `NOMBRE_DUPLICADO`; desactivar y activar cada registro respondió 200. Estos registros de verificación permanecen en la base.
+- Navegación móvil: a 390 px se comprobó que aparece el botón de menú y se ocultan los enlaces; a 1280 px aparecen los enlaces y se oculta el botón. El navegador integrado mantuvo el fallback `loading.tsx` y no permitió comprobar el clic/expansión del menú; el HTML del panel y la navegación sí estaban en la respuesta del servidor.
+- Verificación local: `npm.cmd run type-check` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run build` correcto. No se hizo commit.
+- Estado: P06 implementado y compilado; pendiente confirmar en un navegador normal la interacción del menú móvil.
+
+### P07 Pagos y panel de alertas
+
+- Archivos creados: `src/components/hogar/FormularioPago.tsx`, `src/components/hogar/TablaPagos.tsx`, `src/components/hogar/TablaAlertas.tsx`, `src/app/hogar/pagos/page.tsx` y `src/app/hogar/pagos/nuevo/page.tsx`.
+- Archivos modificados: `src/app/hogar/page.tsx`, `src/app/globals.css` y este registro.
+- Funcionalidad: alta de pagos validada en cliente con `esquemaPago` y fecha futura en Bogotá; listado de pagos con montos abonados/restantes, urgencia solo para pendientes y acción de eliminación confirmada únicamente cuando el pago sigue pendiente y no tiene abonos; panel con saldo, alertas ordenadas y accesos rápidos.
+- Aceptación autenticada con DEMO (2026-11-07): el formulario rechazó una fecha pasada mostrando “La fecha límite debe ser una fecha futura.”; el pago “P07 Demo 5 dias” (vencimiento a 5 días) apareció amarillo y “P07 Demo 1 dia” (a 1 día) rojo. Ambos se eliminaron desde la tabla con confirmación. El panel mostró las alertas rojas antes que las amarillas y los días restantes correspondientes.
+- Eliminación con movimientos: se registró un abono de $100 a “P07 Pago movimiento” ($1.000, abonable). La tabla ocultó su acción de eliminar; DELETE respondió 409 `PAGO_NO_ELIMINABLE` con “Solo se puede eliminar un pago pendiente sin movimientos.” El pago pendiente y su movimiento quedan en DEMO porque los movimientos son inmutables; restante $900.
+- Verificación local: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` sin errores.
+- Estado: P07 implementado y validado. No se hizo commit.

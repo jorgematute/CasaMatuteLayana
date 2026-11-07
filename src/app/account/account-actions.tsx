@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-export default function AccountActions() {
+export default function AccountActions({ mostrarCuenta = true }: { mostrarCuenta?: boolean }) {
   const [error, setError] = useState('');
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -13,7 +13,7 @@ export default function AccountActions() {
 
     try {
       const response = await fetch('/api/auth/logout', { method: 'POST' });
-      const result = await response.json() as { error?: string };
+      const result = (await response.json()) as { error?: string };
 
       if (!response.ok) {
         setError(result.error ?? 'No se pudo cerrar sesión.');
@@ -30,11 +30,15 @@ export default function AccountActions() {
 
   return (
     <div className="account-actions">
-      <Link href="/account">Mi cuenta</Link>
+      {mostrarCuenta && <Link href="/account">Mi cuenta</Link>}
       <button type="button" onClick={handleSignOut} disabled={isSigningOut}>
         {isSigningOut ? 'Saliendo...' : 'Cerrar sesión'}
       </button>
-      {error && <span className="account-actions-error" role="alert">{error}</span>}
+      {error && (
+        <span className="account-actions-error" role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

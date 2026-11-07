@@ -16,11 +16,12 @@ export function validarVinculacion(d: {
   if (d.abonable && (!Number.isInteger(d.montoEnviado) || d.montoEnviado <= 0)) {
     throw new ErrorDeNegocio('DATOS_INVALIDOS');
   }
+
+  if (d.abonable && d.montoEnviado > d.restante) {
+    throw new ErrorDeNegocio('MONTO_EXCEDE_RESTANTE');
+  }
 }
 
-export function estadoTrasAbono(
-  totalAbonado: number,
-  montoPago: number,
-): 'pendiente' | 'pagado' {
+export function estadoTrasAbono(totalAbonado: number, montoPago: number): 'pendiente' | 'pagado' {
   return totalAbonado >= montoPago ? 'pagado' : 'pendiente';
 }
