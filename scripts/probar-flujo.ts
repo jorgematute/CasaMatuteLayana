@@ -75,6 +75,33 @@ async function ejecutarFlujo(): Promise<void> {
     });
     miembroId = miembro.id;
     categoriaId = categoria.id;
+
+    const saldoInicial = (await calcularSaldo()).saldo;
+    if (saldoInicial > 0) {
+      await registrarMovimiento(
+        {
+          miembroId: miembro.id,
+          categoriaId: categoria.id,
+          tipo: 'gasto',
+          monto: saldoInicial,
+          fecha: hoyBogota(),
+        },
+        'prueba-flujo',
+      );
+    } else if (saldoInicial < 0) {
+      await registrarMovimiento(
+        {
+          miembroId: miembro.id,
+          categoriaId: categoria.id,
+          tipo: 'ingreso',
+          monto: -saldoInicial,
+          fecha: hoyBogota(),
+        },
+        'prueba-flujo',
+      );
+    }
+
+    asegurar((await calcularSaldo()).saldo === 0, 'El saldo base no quedó neutralizado.');
   });
 
   await ejecutarPaso(2, 'registrar ingreso y comprobar saldo de $1.000.000', async () => {

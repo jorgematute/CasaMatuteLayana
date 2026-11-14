@@ -10,7 +10,7 @@
 | P05 API | completado | correcto | correcto (48/48) | 2026-11-07 |
 | P06 Interfaz base y catálogos | completado | correcto | correcto (48/48) | 2026-11-07 |
 | P07 Pagos y panel de alertas | completado | correcto | correcto (48/48) | 2026-11-07 |
-| P08 Movimientos y aceptación | pendiente | | | |
+| P08 Movimientos y aceptación | completado | correcto | correcto (48/48) | 2026-11-14 |
 | P09 Opcionales: saldo y categorías | pendiente | | | |
 | P10 Opcionales: resumen y hormiga | pendiente | | | |
 
@@ -112,7 +112,7 @@
 - Archivos modificados: `src/app/globals.css`, `src/app/page.tsx`, `src/app/account/account-actions.tsx` y este registro.
 - Estilos: el proyecto no tiene Tailwind instalado ni configurado; se añadieron los tokens de la sección 13 como variables CSS sin retirar los tokens ni estilos existentes.
 - Funcionalidad: layout de hogar protegido por `obtenerSesion()`; panel con saldo y alertas; navegación con rutas requeridas y menú adaptable; formularios y tablas para miembros/categorías con límite mensual, estado, movimientos y acciones PATCH; errores de API expuestos al usuario y actualización con `router.refresh()`.
-- Verificación autenticada: la sesión existente permitió consultar el panel. Se crearon `Prueba P06 miembro 1794065728229` y `Prueba P06 categoría 1794065728229` (límite $123.456); ambos quedaron activos. Los intentos de repetir ambos nombres respondieron 409 `NOMBRE_DUPLICADO`; desactivar y activar cada registro respondió 200. Estos registros de verificación permanecen en la base.
+- Verificación autenticada: la sesión existente permitió consultar el panel. Se crearon `Prueba P06 miembro 1794065728229` y `Prueba P06 categoría 1794065728229` (límite $123.456); ambos quedaron activos. Los intentos de repetir ambos nombres respondieron 409 `NOMBRE_DUPLICADO`; desactivar y activar cada registro respondió 200. Estos registros se eliminaron durante la limpieza P08 con `db:limpiar --prueba`; los datos `Demo` se conservaron.
 - Navegación móvil: a 390 px se comprobó que aparece el botón de menú y se ocultan los enlaces; a 1280 px aparecen los enlaces y se oculta el botón. El navegador integrado mantuvo el fallback `loading.tsx` y no permitió comprobar el clic/expansión del menú; el HTML del panel y la navegación sí estaban en la respuesta del servidor.
 - Verificación local: `npm.cmd run type-check` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run build` correcto. No se hizo commit.
 - Estado: P06 implementado y compilado; pendiente confirmar en un navegador normal la interacción del menú móvil.
@@ -127,3 +127,16 @@
 - Verificación local: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` sin errores.
 - Estado: P07 implementado y validado. No se hizo commit.
 - Diagnóstico de Vercel (2026-11-07): el Runtime Log de `/hogar` confirma `SELF_SIGNED_CERT_IN_CHAIN` en la conexión PostgreSQL. `src/lib/db/conexion.ts` acepta ahora la CA PEM desde `CASAMATUTELAYANA_POSTGRES_CA_CERT`, sin desactivar `rejectUnauthorized`; `docs/deploy.md` indica cómo cargar el certificado para Production y Preview. Falta configurar la variable en Vercel y desplegar el cambio para comprobar el entorno de producción.
+
+### P08 Movimientos y aceptación
+
+- Archivos creados: `src/components/hogar/SelectorPago.tsx`, `src/components/hogar/FormularioMovimiento.tsx`, `src/components/hogar/FiltrosMovimientos.tsx`, `src/components/hogar/TablaMovimientos.tsx`, `src/app/hogar/movimientos/page.tsx`, `src/app/hogar/movimientos/nuevo/page.tsx`, `doc/ACEPTACION.md`, `doc/checkpoints/FASE_5_COMPLETADA.md` y `doc/checkpoints/FASE_6_COMPLETADA.md`.
+- Archivos modificados: `src/app/globals.css`, `scripts/probar-flujo.ts`, `README.md` y este registro.
+- Funcionalidad: formulario de ingreso/gasto con validación `esquemaMovimiento`; pago asociado opcional, monto bloqueado para pagos no abonables y restante como referencia para abonables; estimación del saldo y respuesta de saldo insuficiente del servidor; consulta con filtros por miembro, categoría y fechas; tabla ordenada por fecha descendente y estado vacío. Parámetros duplicados o inválidos muestran todos los movimientos y un aviso.
+- Auditoría P08: `/api/hogar/movimientos` exige sesión; el saldo y los pagos siguen calculándose en la transacción existente con bloqueo; el SQL usa parámetros; no se añadieron acciones de edición o borrado; la fecha inicial usa `hoyBogota()`; urgencia y tipo se comunican con insignias y texto.
+- Flujo con datos DEMO: la primera ejecución detectó que `scripts/probar-flujo.ts` suponía un saldo inicial cero. Se ajustó el fixture para neutralizar el saldo existente con un movimiento temporal `Prueba`, que su limpieza elimina sin tocar `Demo`. Ejecución final: los 14 pasos terminaron en `OK`, `Resultado de probar:flujo: 0 fallas`.
+- Limpieza y TLS: `npm.cmd run db:limpiar -- --prueba` terminó correctamente y no encontró registros de prueba restantes. La conexión principal agotó el tiempo y se usó la conexión directa; para estas verificaciones, la CA local se cargó solo en el proceso, manteniendo la validación TLS activa. No se modificó `.env.local` ni se mostraron credenciales.
+- Seguridad de configuración: `git check-ignore -v .env.local` confirmó que está ignorado. La revisión de los valores sensibles de entorno no encontró coincidencias en archivos versionados.
+- Verificación final (2026-11-14): `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` correcto.
+- Aceptación: creada la tabla A-01 a A-18 con las columnas pedidas; sus resultados, evidencias y observaciones quedan vacíos. A-13 a A-17 corresponden a P09/P10.
+- Estado: P08 implementado y validado localmente; A-01 a A-12 y A-18 quedan para ejecutarse en Vercel.
