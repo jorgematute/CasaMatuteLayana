@@ -30,7 +30,7 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
       });
-      const result = await response.json() as { error?: string };
+      const result = (await response.json()) as { error?: string };
       if (!response.ok) {
         setAuthError(result.error ?? 'Correo o contraseña incorrectos');
         return;
@@ -46,17 +46,25 @@ export default function LoginPage() {
   return (
     <main className="login-shell">
       <header className="login-header">
-        <Link className="brand" href="/" aria-label="Casa Matute Layana, inicio">
-          Casa <span>Matute</span>
-        </Link>
-        <span className="login-header-note">PRESUPUESTO DEL HOGAR</span>
+        <div className="login-header__inner">
+          <Link className="hogar-marca" href="/" aria-label="Casa Matute Layana, inicio">
+            Casa <span>Matute</span>
+          </Link>
+          <span className="login-header-note">PRESUPUESTO DEL HOGAR</span>
+        </div>
       </header>
 
       <section className="login-layout" aria-labelledby="login-title">
         <div className="login-intro">
-          <div className="eyebrow">Un lugar para tus cuentas</div>
-          <h1 id="login-title">Tu casa,<br />en equilibrio.</h1>
-          <p>Organiza el presupuesto de casa con claridad y empieza cada mes con un plan compartido.</p>
+          <div className="login-eyebrow">Un lugar para tus cuentas</div>
+          <h1 id="login-title">
+            Tu casa,
+            <br />
+            en equilibrio.
+          </h1>
+          <p>
+            Organiza el presupuesto de casa con claridad y empieza cada mes con un plan compartido.
+          </p>
           <div className="login-stamp" aria-hidden="true">
             <span className="login-stamp-mark">CM</span>
             <span className="login-stamp-line" />
@@ -90,7 +98,11 @@ export default function LoginPage() {
                 aria-invalid={Boolean(emailError)}
                 aria-describedby={emailError ? 'email-error' : undefined}
               />
-              {emailError && <p className="login-field-error" id="email-error">{emailError}</p>}
+              {emailError && (
+                <p className="login-field-error" id="email-error">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             <div className="login-field">
@@ -110,14 +122,24 @@ export default function LoginPage() {
                 aria-invalid={Boolean(passwordError)}
                 aria-describedby={passwordError ? 'password-error' : undefined}
               />
-              {passwordError && <p className="login-field-error" id="password-error">{passwordError}</p>}
+              {passwordError && (
+                <p className="login-field-error" id="password-error">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             <div className="login-forgot-row">
-              <a href="#" onClick={(event) => event.preventDefault()}>Olvidé mi contraseña</a>
+              <a href="#" onClick={(event) => event.preventDefault()}>
+                Olvidé mi contraseña
+              </a>
             </div>
 
-            {authError && <p className="login-auth-error" role="alert">{authError}</p>}
+            {authError && (
+              <p className="login-auth-error" role="alert">
+                {authError}
+              </p>
+            )}
 
             <button className="login-submit" type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Entrando...' : 'Entrar'}
@@ -125,7 +147,10 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="login-panel-foot"><span>CASA MATUTE LAYANA</span><span>01 / 01</span></div>
+          <div className="login-panel-foot">
+            <span>CASA MATUTE LAYANA</span>
+            <span>01 / 01</span>
+          </div>
         </div>
       </section>
 

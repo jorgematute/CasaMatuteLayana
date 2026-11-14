@@ -140,3 +140,18 @@
 - Verificación final (2026-11-14): `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` correcto.
 - Aceptación: creada la tabla A-01 a A-18 con las columnas pedidas; sus resultados, evidencias y observaciones quedan vacíos. A-13 a A-17 corresponden a P09/P10.
 - Estado: P08 implementado y validado localmente; A-01 a A-12 y A-18 quedan para ejecutarse en Vercel.
+
+### Unificación visual de acceso e inicio
+
+- Archivos modificados: `src/app/login/page.tsx`, `src/app/page.tsx`, `src/app/globals.css` y este registro.
+- Estilos: el login y la página `/` adoptan la paleta azul y neutra, superficies blancas, bordes y botones del módulo `/hogar`; se mantienen los estilos compartidos por notas, estado y administración. La portada y sus enlaces se adaptan a pantallas pequeñas.
+- Comportamiento: se conservan los enlaces y contenidos existentes; el login continúa redirigiendo a `/hogar`, que es el panel del hogar (también rotulado “Panel” en su navegación).
+- Verificación (2026-11-14): `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto; `git diff --check` correcto.
+
+### Corrección de filtros de movimientos
+
+- Archivo modificado: `src/components/hogar/FiltrosMovimientos.tsx` y este registro.
+- Causa: los cuatro filtros tenían `value` sin `onChange`, por lo que React los trataba como campos de solo lectura y mostraba errores de consola repetidos en cada renderizado.
+- Corrección: se usan `defaultValue` para inicializar campos editables; al enviar el formulario GET, la página vuelve a cargar los valores seleccionados y aplica los filtros validados.
+- Verificación en navegador (2026-11-14): seleccionados miembro, categoría y rango del 2026-11-14; el filtro devolvió el único movimiento coincidente. “Limpiar filtros” restauró los siete movimientos y los campos vacíos. Tras recargar, no se registraron errores de consola.
+- Verificación local: `npm.cmd run build` correcto; `npm.cmd test` correcto (7 archivos, 48 pruebas); `npm.cmd run type-check` correcto tras repetirlo una vez concluido el build; `git diff --check` correcto.

@@ -13,14 +13,19 @@ type Props = {
 export function FiltrosMovimientos({ miembros, categorias, filtros, error }: Props) {
   return (
     <div className="filtros-movimientos">
-      <form action="/hogar/movimientos" className="filtros-movimientos__formulario" method="get">
+      <form
+        action="/hogar/movimientos"
+        className="filtros-movimientos__formulario"
+        key={JSON.stringify(filtros)}
+        method="get"
+      >
         <Selector
           etiqueta="Miembro"
           id="filtro-miembro"
           marcador="Todos"
           name="miembroId"
           opciones={miembros.map((miembro) => ({ valor: miembro.id, etiqueta: miembro.nombre }))}
-          value={filtros.miembroId ?? ''}
+          defaultValue={filtros.miembroId ?? ''}
         />
         <Selector
           etiqueta="Categoría"
@@ -31,21 +36,21 @@ export function FiltrosMovimientos({ miembros, categorias, filtros, error }: Pro
             valor: categoria.id,
             etiqueta: categoria.nombre,
           }))}
-          value={filtros.categoriaId ?? ''}
+          defaultValue={filtros.categoriaId ?? ''}
         />
         <Campo
           etiqueta="Desde"
           id="filtro-desde"
           name="desde"
           type="date"
-          value={filtros.desde ?? ''}
+          defaultValue={filtros.desde ?? ''}
         />
         <Campo
           etiqueta="Hasta"
           id="filtro-hasta"
           name="hasta"
           type="date"
-          value={filtros.hasta ?? ''}
+          defaultValue={filtros.hasta ?? ''}
         />
         <div className="filtros-movimientos__acciones">
           <button className="boton boton--primario" type="submit">

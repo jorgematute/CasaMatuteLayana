@@ -14,65 +14,77 @@ export default async function HomePage() {
     : { data: null };
 
   return (
-    <main className="shell">
-      <nav className="nav">
-        <Link className="brand" href="/">
-          Casa <span>Matute</span>
-        </Link>
-        <div className="navlinks">
-          <Link href="/hogar">Presupuesto</Link>
-          <Link href="/notes">Notas</Link>
-          <Link href="/status">Estado</Link>
-          {profile?.is_admin && <Link href="/admin/users">Cuentas</Link>}
-          <Link href="/api/health">API Health</Link>
-        </div>
-        <AccountActions />
-      </nav>
-      <section className="hero">
-        <div>
-          <div className="eyebrow">Sistema operativo · v0.1.0</div>
+    <main className="inicio">
+      <header className="inicio-encabezado">
+        <nav className="inicio-encabezado__fila" aria-label="Navegación principal">
+          <Link className="hogar-marca" href="/">
+            Casa <span>Matute</span>
+          </Link>
+          <div className="inicio-enlaces">
+            <Link href="/hogar">Presupuesto</Link>
+            <Link href="/notes">Notas</Link>
+            <Link href="/status">Estado</Link>
+            {profile?.is_admin && <Link href="/admin/users">Cuentas</Link>}
+            <Link href="/api/health">API Health</Link>
+          </div>
+          <div className="inicio-sesion">
+            <AccountActions />
+          </div>
+        </nav>
+      </header>
+
+      <section className="inicio-portada">
+        <div className="inicio-portada__contenido">
+          <p className="inicio-ceja">Sistema operativo · v0.1.0</p>
           <h1>Ideas que encuentran casa.</h1>
           <p>
             Una base fullstack en TypeScript para organizar notas, datos y decisiones con claridad.
             Persistencia JSON, API tipada y una interfaz lista para crecer.
           </p>
-          <Link className="cta" href="/notes">
-            Abrir notas →
-          </Link>
-          <p>
-            <Link href="/hogar">Ir al presupuesto del hogar</Link>
-          </p>
+          <div className="inicio-portada__acciones">
+            <Link className="boton boton--primario" href="/notes">
+              Abrir notas
+            </Link>
+            <Link className="boton boton--secundario" href="/hogar">
+              Ir al presupuesto
+            </Link>
+          </div>
         </div>
-        <div className="mark">
-          <small>CASA / MATUTE / LAYANA</small>
-          <strong>
-            CM
-            <br />↗
-          </strong>
-          <small>Construido con intención.</small>
+        <div className="inicio-sello" aria-label="Casa Matute Layana">
+          <span>CASA / MATUTE / LAYANA</span>
+          <strong>CM</strong>
+          <span>Construido con intención.</span>
         </div>
       </section>
-      <section className="section">
-        <div className="section-header">
-          <h2>El sistema, de un vistazo.</h2>
+
+      <section className="inicio-seccion">
+        <div className="inicio-seccion__encabezado">
+          <div>
+            <p className="inicio-ceja">Herramientas</p>
+            <h2>El sistema, de un vistazo.</h2>
+          </div>
           <span className="mono">01 — 03</span>
         </div>
-        <div className="cards">
-          <article className="card">
+        <div className="inicio-tarjetas">
+          <article className="inicio-tarjeta">
+            <span className="inicio-tarjeta__numero">01</span>
             <h3>Notas</h3>
             <p>Captura y ordena ideas con categorías y prioridades.</p>
           </article>
-          <article className="card">
+          <article className="inicio-tarjeta">
+            <span className="inicio-tarjeta__numero">02</span>
             <h3>Datos</h3>
             <p>CRUD genérico validado con Zod y respaldos automáticos.</p>
           </article>
-          <article className="card">
+          <article className="inicio-tarjeta">
+            <span className="inicio-tarjeta__numero">03</span>
             <h3>Salud</h3>
             <p>Observa versión, entorno y estado del servicio en tiempo real.</p>
           </article>
         </div>
       </section>
-      <footer className="footer">
+
+      <footer className="inicio-pie">
         <span>Casa Matute Layana</span>
         <span className="mono">TS / JSON / 2026</span>
       </footer>
