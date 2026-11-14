@@ -11,12 +11,16 @@ const cadenaConexion =
   process.env.CASAMATUTELAYANA_POSTGRES_URL;
 const urlConexion = cadenaConexion ? new URL(cadenaConexion) : null;
 urlConexion?.searchParams.delete('sslmode');
+const certificadoPostgres = process.env.CASAMATUTELAYANA_POSTGRES_CA_CERT?.replace(/\\n/g, '\n');
 
 export const pool =
   globalParaPool.poolCasaMatute ??
   new Pool({
     connectionString: urlConexion?.toString(),
-    ssl: { rejectUnauthorized: true },
+    ssl: {
+      rejectUnauthorized: true,
+      ...(certificadoPostgres ? { ca: certificadoPostgres } : {}),
+    },
     max: 3,
     idleTimeoutMillis: 10_000,
   });
